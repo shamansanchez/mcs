@@ -1,5 +1,6 @@
 package mcs.game;
 
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 public class Task {
@@ -20,9 +21,10 @@ public class Task {
 		this.text = text;
 	}
 
-	public Task run() {
-		Task nextTask = new Task(5, "Doing something...");
-
+	public Task run(Game game) {
+		Task nextTask = new Task(5, String.format("%s is doing something...", game.getId()));
+		
+		game.publishEvent(this.text);
 		System.out.println(this.text);
 
 		try {

@@ -8,9 +8,10 @@ import java.net.Socket;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import mcs.game.Task;
+import mcs.CrazyAwesomeClass;
+import mcs.game.Game;
 
-public class Listener implements Runnable, ActionListener {
+public class Listener implements Runnable {
 	private Socket sock;
 	private Boolean done;
 
@@ -23,6 +24,9 @@ public class Listener implements Runnable, ActionListener {
 	public void run() {
 		System.out.println("connection");
 		System.out.println(sock.getRemoteSocketAddress());
+		
+		Game game = CrazyAwesomeClass.getGameThread("test");
+		game.addListener(this);
 
 		while (!this.done) {
 			try {
@@ -34,12 +38,11 @@ public class Listener implements Runnable, ActionListener {
 		}
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(String e) {
 		// TODO Auto-generated method stub
 		PrintWriter out;
 		Scanner in;
-
+		
 		try {
 			in = new Scanner(sock.getInputStream());
 			out = new PrintWriter(sock.getOutputStream());
