@@ -1,12 +1,12 @@
 package mcs.net;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import mcs.CrazyAwesomeClass;
 import mcs.game.Game;
@@ -15,55 +15,73 @@ public class Listener implements Runnable {
 	private Socket sock;
 	private Boolean done;
 
+	private BlockingQueue<String> queue;
+
 	public Listener(Socket s) {
 		sock = s;
 		done = false;
+
+		queue = new LinkedBlockingQueue<String>();
+	}
+
+	public Boolean isDone() {
+		return done;
 	}
 
 	@Override
 	public void run() {
 		System.out.println("connection");
 		System.out.println(sock.getRemoteSocketAddress());
-		
-		Game game = CrazyAwesomeClass.getGameThread("test");
-		game.addListener(this);
 
-		while (!this.done) {
-			try {
-				System.out.println("tick");
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public void actionPerformed(String e) {
-		// TODO Auto-generated method stub
 		PrintWriter out;
 		Scanner in;
-		
+
 		try {
 			in = new Scanner(sock.getInputStream());
 			out = new PrintWriter(sock.getOutputStream());
-
-			System.out.println("sending");
-
-			out.println("JASON IS AWESOME");
-			out.flush();
-
-			try {
-				String response = in.nextLine();
-				System.out.println(response);
-
-			} catch (NoSuchElementException ex) {
-				System.out.println("Done!");
-				this.done = true;
-				in.close();
+			
+			//TODO: Handle disconnection here...
+			String name = in.nextLine();
+			
+			Game game = CrazyAwesomeClass.getGameThread(name);
+			
+			if(game == null){
+				game = CrazyAwesomeClass.startGame(name);
 			}
-		} catch (IOException e1) {
+			
+			game.addListener(this);
+
+			while (!this.done) {
+				String message = queue.take();
+				System.out.println("sending");
+
+				out.println(message);
+				out.flush();
+
+				try {
+					String response = in.nextLine();
+					System.out.println(response);
+
+				} catch (NoSuchElementException ex) {
+					System.out.println("Done!");
+					this.done = true;
+					in.close();
+				}
+
+			}
+		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
+		}
+	}
+
+	public void dispatch(String event) {
+		// TODO Auto-generated method stub
+		try {
+			queue.put(event);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

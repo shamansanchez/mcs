@@ -1,8 +1,5 @@
 package mcs.game;
 
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-
 public class Task {
 	private int duration;
 
@@ -22,7 +19,7 @@ public class Task {
 	}
 
 	public Task run(Game game) {
-		Task nextTask = new Task(5, String.format("%s is doing something...", game.getId()));
+		Task nextTask = new Task(5, String.format("%s is doing something...", game.getName()));
 		
 		game.publishEvent(this.text);
 		System.out.println(this.text);

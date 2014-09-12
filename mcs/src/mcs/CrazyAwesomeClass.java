@@ -1,13 +1,13 @@
 package mcs;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.ServerSocket;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import mcs.game.Game;
-import mcs.net.*;
+import mcs.net.Listener;
 
 public class CrazyAwesomeClass {
 
@@ -19,11 +19,7 @@ public class CrazyAwesomeClass {
 		gameThreads = Collections
 				.synchronizedMap(new HashMap<String, Game>());
 
-		startGame("test");
-
-		for (Map.Entry<String, Game> entry : gameThreads.entrySet()) {
-			new Thread(entry.getValue()).start();
-		}
+		startGame("Jason");
 
 		ServerSocket ssock = null;
 		try {
@@ -45,8 +41,13 @@ public class CrazyAwesomeClass {
 		return gameThreads.get(id);
 	}
 
-	public static void startGame(String id) {
-		gameThreads.put(id, new Game(id));
+	public static Game startGame(String id) {
+		Game game = new Game();
+		game.setName(id);
+		game.start();
+		
+		gameThreads.put(id, game);
+		return gameThreads.get(id);
 	}
 
 }
