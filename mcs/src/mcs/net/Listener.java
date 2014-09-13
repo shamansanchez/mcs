@@ -15,13 +15,13 @@ public class Listener implements Runnable {
 	private Socket sock;
 	private Boolean done;
 
-	private BlockingQueue<String> queue;
+	private BlockingQueue<Event> queue;
 
 	public Listener(Socket s) {
 		sock = s;
 		done = false;
 
-		queue = new LinkedBlockingQueue<String>();
+		queue = new LinkedBlockingQueue<Event>();
 	}
 
 	public Boolean isDone() {
@@ -39,28 +39,35 @@ public class Listener implements Runnable {
 		try {
 			in = new Scanner(sock.getInputStream());
 			out = new PrintWriter(sock.getOutputStream());
-			
-			//TODO: Handle disconnection here...
+
+			// TODO: Handle disconnection here...
 			String name = in.nextLine();
-			
+
 			Game game = CrazyAwesomeClass.getGameThread(name);
-			
-			if(game == null){
+
+			if (game == null) {
 				game = CrazyAwesomeClass.startGame(name);
 			}
-			
+
 			game.addListener(this);
 
 			while (!this.done) {
-				String message = queue.take();
+				Event event = queue.take();
 				System.out.println("sending");
 
-				out.println(message);
+				out.println(event);
 				out.flush();
+
+				System.out.println(in.hasNext());
 
 				try {
 					String response = in.nextLine();
 					System.out.println(response);
+					
+					if(response.equals("quit")){
+						this.done = true;
+						in.close();
+					}
 
 				} catch (NoSuchElementException ex) {
 					System.out.println("Done!");
@@ -75,7 +82,7 @@ public class Listener implements Runnable {
 		}
 	}
 
-	public void dispatch(String event) {
+	public void dispatch(Event event) {
 		// TODO Auto-generated method stub
 		try {
 			queue.put(event);

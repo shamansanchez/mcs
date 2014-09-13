@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import mcs.game.task.Prologue;
+import mcs.game.task.Task;
+import mcs.net.Event;
 import mcs.net.Listener;
 
 public class Game extends Thread {
@@ -20,9 +23,10 @@ public class Game extends Thread {
 		this.listeners.add(listener);
 	}
 
-	public void publishEvent(String event) {
+	public void publishEvent(Event event) {
 		ArrayList<Listener> deadListeners = new ArrayList<Listener>();
 
+		// Add this event to the queue for any listening listeners...
 		for (Listener listener : this.listeners) {
 			if (!listener.isDone()) {
 				listener.dispatch(event);
@@ -30,7 +34,9 @@ public class Game extends Thread {
 				deadListeners.add(listener);
 			}
 		}
-		
+
+		// We need to take care of the dead ones here, since we can't remove
+		// things while iterating in the other loop
 		for (Listener listener : deadListeners) {
 			this.listeners.remove(listener);
 		}
@@ -38,15 +44,21 @@ public class Game extends Thread {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		try {
+			// Start the game with a prologue...
+			Task prologue = new Prologue();
+			Task nextTask = prologue.run(this);
 
-		Task prologue = new Task(10, String.format(
-				"An epic beginning for %s...", this.getName()));
+			// TODO: Load an existing game if possible
 
-		Task nextTask = prologue.run(this);
+			// Then just run tasks forever
+			while (true) {
+				nextTask = nextTask.run(this);
+			}
 
-		while (true) {
-			nextTask = nextTask.run(this);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

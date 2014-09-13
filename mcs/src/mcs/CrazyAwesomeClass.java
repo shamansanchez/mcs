@@ -21,6 +21,7 @@ public class CrazyAwesomeClass {
 
 		startGame("Jason");
 
+		// Accept connections on port 2342
 		ServerSocket ssock = null;
 		try {
 			ssock = new ServerSocket(2342);
@@ -28,6 +29,7 @@ public class CrazyAwesomeClass {
 			e.printStackTrace();
 		}
 
+		// and listen forever, spinning off a Listener thread for each connection
 		while (true) {
 			try {
 				new Thread(new Listener(ssock.accept())).start();
@@ -47,7 +49,7 @@ public class CrazyAwesomeClass {
 		game.start();
 		
 		gameThreads.put(id, game);
-		return gameThreads.get(id);
+		return game;
 	}
 
 }
