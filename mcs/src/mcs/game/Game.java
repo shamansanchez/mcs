@@ -21,6 +21,8 @@ public class Game extends Thread {
 	public String charClass;
 	
 	public int level;
+	public int totalExperience;
+	public int expToNextLevel;
 	
 	public Map<String, Integer> stats;
 	public Map<String, Integer> spells;
@@ -59,6 +61,16 @@ public class Game extends Thread {
 			this.listeners.remove(listener);
 		}
 	}
+	
+	public void addExperience(int experience){
+		this.expToNextLevel -= experience;
+		this.totalExperience += experience;
+		
+		if (this.expToNextLevel <= 0) {
+			this.level += 1;
+			this.expToNextLevel = this.level * 500;
+		}
+	}
 
 	@Override
 	public void run() {
@@ -66,6 +78,11 @@ public class Game extends Thread {
 			// Start the game with a prologue...
 			Task prologue = new Prologue(null);
 			Task nextTask = prologue.run(this);
+			
+			this.level = 1;
+			this.expToNextLevel = 500;
+			
+			this.inventory = new ArrayList<Item>();
 
 			// TODO: Load an existing game if possible
 

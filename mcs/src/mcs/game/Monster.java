@@ -4,6 +4,14 @@ public class Monster {
 	private String name;
 	private int level;
 
+	public String getName() {
+		return name;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
 	public static Monster getMonster(int level) {
 		return new Monster("Monster", level);
 	}

@@ -17,6 +17,7 @@ public class MonsterTask extends Task {
 		
 		game.inventory.add(monster.getReward());
 		
+		game.addExperience(monster.getLevel() * 10);
 		
 		return new MonsterTask(this);
 	}
