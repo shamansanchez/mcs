@@ -5,6 +5,10 @@ import mcs.net.Event;
 
 public class Prologue extends Task {
 
+	public Prologue(Task prevTask) {
+		super(prevTask);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -32,6 +36,6 @@ public class Prologue extends Task {
 		publishEvent(event4, game);
 		publishEvent(event5, game);
 
-		return new KillStuff();
+		return new MonsterTask(this);
 	}
 }

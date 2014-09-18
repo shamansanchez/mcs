@@ -3,6 +3,7 @@ package mcs.game;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import mcs.game.task.Prologue;
 import mcs.game.task.Task;
@@ -12,6 +13,23 @@ import mcs.net.Listener;
 public class Game extends Thread {
 
 	private List<Listener> listeners;
+
+	public int wealth;
+	public ArrayList<Item> inventory;
+	
+	public String race;
+	public String charClass;
+	
+	public int level;
+	
+	public Map<String, Integer> stats;
+	public Map<String, Integer> spells;
+	
+	public Map<String, Item> equipment;
+	
+	public ArrayList<String> plot;
+	public ArrayList<String> quests;
+	
 
 	public Game() {
 		this.listeners = Collections
@@ -46,7 +64,7 @@ public class Game extends Thread {
 	public void run() {
 		try {
 			// Start the game with a prologue...
-			Task prologue = new Prologue();
+			Task prologue = new Prologue(null);
 			Task nextTask = prologue.run(this);
 
 			// TODO: Load an existing game if possible

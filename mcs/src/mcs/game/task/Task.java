@@ -4,6 +4,12 @@ import mcs.game.Game;
 import mcs.net.Event;
 
 public abstract class Task {
+	
+	protected Task prevTask;
+	
+	public Task(Task prevTask) {
+		this.prevTask = prevTask;
+	}
 
 	public abstract Task run(Game game) throws InterruptedException;
 
