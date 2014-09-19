@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import mcs.game.Game;
 import mcs.game.Item;
-import mcs.net.Event;
 
 public class VendorTask extends Task{
 	
@@ -21,12 +20,12 @@ public class VendorTask extends Task{
 		}
 		
 		if(game.wealth != 0) {
-			buyItems(game.wealth);
+			buyEquipment(game.wealth);
 		}
 		return new TownTask(this);
 	}
 
-	private void buyItems(int wealth) {
+	private void buyEquipment(int wealth) {
 		
 	}
 
